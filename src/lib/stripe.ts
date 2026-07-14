@@ -54,6 +54,13 @@ export const SUBSCRIPTION_PLAN_QUOTA: Record<"BASIC" | "PRO" | "ENTERPRISE", num
   ENTERPRISE: 999999,
 };
 
+/** Reference AED list prices for subscription plans (per month), for display before Stripe confirms. */
+export const SUBSCRIPTION_PLAN_AMOUNT_AED: Record<"BASIC" | "PRO" | "ENTERPRISE", number> = {
+  BASIC: 299,
+  PRO: 899,
+  ENTERPRISE: 2499,
+};
+
 export const JOB_LISTING_DURATION_DAYS: Record<"STANDARD" | "FEATURED" | "URGENT", number> = {
   STANDARD: 30,
   FEATURED: 30,
