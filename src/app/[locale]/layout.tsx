@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { ToastProvider } from "@/components/ui/Toast";
+import { PwaSetup } from "@/components/forms/PwaSetup";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -21,6 +22,17 @@ export const metadata: Metadata = {
   title: "UAE Driver Jobs",
   description: "Find and post driving jobs across the UAE.",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Driver Jobs",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#059669",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export function generateStaticParams() {
@@ -51,6 +63,7 @@ export default async function LocaleLayout({
       <body className="min-h-full flex flex-col bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50">
         <NextIntlClientProvider messages={messages}>
           <ToastProvider>{children}</ToastProvider>
+          <PwaSetup />
         </NextIntlClientProvider>
       </body>
     </html>

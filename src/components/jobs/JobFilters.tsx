@@ -97,16 +97,16 @@ export function JobFilters({ initial }: { initial: JobFilterValues }) {
   const activeCount = [initial.emirate, initial.category, initial.employmentType].filter(Boolean).length;
 
   return (
-    <>
+    <div className="w-full shrink-0 sm:w-64">
       {/* Mobile: trigger + bottom sheet */}
-      <div className="mb-4 flex gap-2 sm:hidden">
+      <div className="mb-4 flex w-full gap-2 sm:hidden">
         <Input
           placeholder="Search jobs..."
           defaultValue={initial.q}
           onKeyDown={(e) => {
             if (e.key === "Enter") apply({ ...draft, q: (e.target as HTMLInputElement).value });
           }}
-          className="flex-1"
+          className="min-w-0 flex-1"
         />
         <Button variant="outline" onClick={() => setSheetOpen(true)} aria-label={t("filters")}>
           <SlidersHorizontal className="h-4 w-4" />
@@ -121,12 +121,12 @@ export function JobFilters({ initial }: { initial: JobFilterValues }) {
       </Sheet>
 
       {/* Desktop: inline sidebar */}
-      <div className="hidden w-64 shrink-0 sm:block">
+      <div className="hidden sm:block">
         <FilterFields values={draft} onChange={setDraft} />
         <Button fullWidth className="mt-4" onClick={() => apply(draft)}>
           {t("applyFilters")}
         </Button>
       </div>
-    </>
+    </div>
   );
 }

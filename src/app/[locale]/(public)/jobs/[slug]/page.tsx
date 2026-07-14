@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { Badge } from "@/components/ui/Badge";
 import { ApplyBar } from "@/components/jobs/ApplyBar";
+import { formatAed } from "@/lib/format";
 import {
   EMIRATE_LABELS,
   JOB_CATEGORY_LABELS,
@@ -41,7 +43,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
   const job = await getJob(slug);
   if (!job || job.status !== "ACTIVE" || !job.isModeratedApproved) notFound();
 
-  const user = await getCurrentUser();
+  const [user, locale] = await Promise.all([getCurrentUser(), getLocale()]);
   const isDriver = user?.role === "DRIVER";
 
   let applied = false;
@@ -116,9 +118,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
 
       {(job.salaryMin || job.salaryMax) && (
         <p className="mt-3 font-medium">
-          AED {job.salaryMin ?? job.salaryMax}
-          {job.salaryMin && job.salaryMax && job.salaryMin !== job.salaryMax ? `–${job.salaryMax}` : ""} /{" "}
-          {SALARY_PERIOD_LABELS[job.salaryPeriod]}
+          {formatAed(job.salaryMin ?? job.salaryMax!, locale)}
+          {job.salaryMin && job.salaryMax && job.salaryMin !== job.salaryMax
+            ? `–${formatAed(job.salaryMax, locale)}`
+            : ""}{" "}
+          / {SALARY_PERIOD_LABELS[job.salaryPeriod]}
         </p>
       )}
 

@@ -10,7 +10,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="flex flex-1 flex-col">
       <div className="flex flex-1">
         <AdminSideNav />
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <header className="flex items-center justify-end gap-4 border-b border-neutral-200 p-3 dark:border-neutral-800">
             <LocaleSwitcher />
             <LogoutButton />

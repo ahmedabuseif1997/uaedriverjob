@@ -36,7 +36,7 @@ export function JobCard({ job, isDriver }: { job: JobCardData; isDriver: boolean
   const salary = salaryText(job, locale);
 
   return (
-    <Link href={`/jobs/${job.slug}`}>
+    <Link href={`/jobs/${job.slug}`} className="block min-w-0">
       <Card className="h-full transition-shadow hover:shadow-md">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">

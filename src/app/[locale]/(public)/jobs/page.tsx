@@ -90,7 +90,7 @@ export default async function JobsSearchPage({
   return (
     <main className="mx-auto max-w-6xl p-4">
       <h1 className="mb-4 text-xl font-semibold">{t("resultsCount", { count: total })}</h1>
-      <div className="flex gap-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
         <JobFilters initial={filters} />
         <div className="flex-1">
           <JobResultsClient

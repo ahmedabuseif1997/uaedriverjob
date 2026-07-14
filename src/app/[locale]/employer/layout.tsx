@@ -12,7 +12,7 @@ export default async function EmployerLayout({ children }: { children: React.Rea
       {!user.emailVerified && <VerifyEmailBanner />}
       <div className="flex flex-1">
         <EmployerSideNav />
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <header className="flex items-center justify-end gap-4 border-b border-neutral-200 p-3 dark:border-neutral-800">
             <LocaleSwitcher />
             <LogoutButton />
