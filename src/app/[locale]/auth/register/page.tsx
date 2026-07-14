@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Car, Building2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, FieldError } from "@/components/ui/Input";
@@ -11,6 +12,8 @@ import { cn } from "@/lib/cn";
 import { registerSchema, type RegisterInput } from "@/validation/authSchemas";
 
 export default function RegisterPage() {
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -45,8 +48,8 @@ export default function RegisterPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-lg font-semibold">Create your account</h1>
-      <p className="mb-5 text-sm text-neutral-500">Find driving jobs or hire drivers across the UAE.</p>
+      <h1 className="mb-1 text-lg font-semibold">{t("registerTitle")}</h1>
+      <p className="mb-5 text-sm text-neutral-500">{t("registerSubtitle")}</p>
 
       <div className="mb-5 grid grid-cols-2 gap-2">
         <button
@@ -60,7 +63,7 @@ export default function RegisterPage() {
           )}
         >
           <Car className="h-5 w-5" />
-          I&apos;m a Driver
+          {t("iAmDriver")}
         </button>
         <button
           type="button"
@@ -73,23 +76,23 @@ export default function RegisterPage() {
           )}
         >
           <Building2 className="h-5 w-5" />
-          I&apos;m Hiring
+          {t("iAmEmployer")}
         </button>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <Label htmlFor="name">{role === "EMPLOYER" ? "Company name" : "Full name"}</Label>
+          <Label htmlFor="name">{role === "EMPLOYER" ? t("companyName") : t("fullName")}</Label>
           <Input id="name" autoComplete="name" {...register("name")} />
           <FieldError>{errors.name?.message}</FieldError>
         </div>
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("email")}</Label>
           <Input id="email" type="email" autoComplete="email" {...register("email")} />
           <FieldError>{errors.email?.message}</FieldError>
         </div>
         <div>
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t("password")}</Label>
           <Input id="password" type="password" autoComplete="new-password" {...register("password")} />
           <FieldError>{errors.password?.message}</FieldError>
         </div>
@@ -97,14 +100,14 @@ export default function RegisterPage() {
         {serverError && <p className="text-sm text-red-600">{serverError}</p>}
 
         <Button type="submit" fullWidth disabled={isSubmitting}>
-          {isSubmitting ? "Creating account..." : "Create account"}
+          {isSubmitting ? t("creatingAccount") : t("createAccount")}
         </Button>
       </form>
 
       <p className="mt-5 text-center text-sm text-neutral-500">
-        Already have an account?{" "}
+        {t("alreadyHaveAccount")}{" "}
         <Link href="/auth/login" className="font-medium text-emerald-700 dark:text-emerald-400">
-          Log in
+          {tc("login")}
         </Link>
       </p>
     </div>

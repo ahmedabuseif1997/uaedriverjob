@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Input";
@@ -26,6 +27,7 @@ export function ApplyBar({
   missingLicenseCategories: DriverLicenseCategory[];
   missingVehicleTypes: VehicleType[];
 }) {
+  const t = useTranslations("jobs");
   const router = useRouter();
   const [applied, setApplied] = useState(initialApplied);
   const [applying, setApplying] = useState(false);
@@ -76,7 +78,7 @@ export function ApplyBar({
       <StickyBar>
         {showCoverNote && !applied && (
           <Textarea
-            placeholder="Add a note to the employer (optional)"
+            placeholder={t("notePlaceholder")}
             value={coverNote}
             onChange={(e) => setCoverNote(e.target.value)}
             rows={2}
@@ -91,7 +93,7 @@ export function ApplyBar({
               onClick={() => setShowCoverNote(true)}
               className="text-sm font-medium text-neutral-500 underline underline-offset-2"
             >
-              Add a note
+              {t("addNote")}
             </button>
           )}
           <Button
@@ -101,18 +103,16 @@ export function ApplyBar({
             className="ms-auto max-w-xs"
           >
             <Send className="h-4 w-4" />
-            {applied ? "Applied ✓" : applying ? "Applying..." : isLoggedIn ? "Apply now" : "Sign up to apply"}
+            {applied ? t("appliedLabel") : applying ? t("applying") : isLoggedIn ? t("applyNow") : t("signUpToApply")}
           </Button>
         </div>
       </StickyBar>
 
-      <Sheet open={showMissingFieldsModal} onClose={() => setShowMissingFieldsModal(false)} title="One more thing">
-        <p className="mb-4 text-sm text-neutral-500">
-          This job requires info that&apos;s missing from your profile. Add it now to apply.
-        </p>
+      <Sheet open={showMissingFieldsModal} onClose={() => setShowMissingFieldsModal(false)} title={t("oneMoreThing")}>
+        <p className="mb-4 text-sm text-neutral-500">{t("missingFieldsBody")}</p>
         {missingLicenseCategories.length > 0 && (
           <div className="mb-4">
-            <p className="mb-1.5 text-sm font-medium">License categories</p>
+            <p className="mb-1.5 text-sm font-medium">{t("licenseCategories")}</p>
             <ChipMultiSelect
               options={missingLicenseCategories.map((v) => ({ value: v, label: DRIVER_LICENSE_CATEGORY_LABELS[v] }))}
               value={pickedLicense}
@@ -122,7 +122,7 @@ export function ApplyBar({
         )}
         {missingVehicleTypes.length > 0 && (
           <div className="mb-4">
-            <p className="mb-1.5 text-sm font-medium">Vehicle types</p>
+            <p className="mb-1.5 text-sm font-medium">{t("vehicleTypes")}</p>
             <ChipMultiSelect
               options={missingVehicleTypes.map((v) => ({ value: v, label: VEHICLE_TYPE_LABELS[v] }))}
               value={pickedVehicle}
@@ -136,7 +136,7 @@ export function ApplyBar({
           disabled={applying}
           onClick={() => submitApply({ licenseCategories: pickedLicense, vehicleTypes: pickedVehicle })}
         >
-          {applying ? "Applying..." : "Confirm and apply"}
+          {applying ? t("applying") : t("confirmAndApply")}
         </Button>
       </Sheet>
     </>

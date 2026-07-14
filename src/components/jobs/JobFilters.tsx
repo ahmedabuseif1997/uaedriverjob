@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input, Select, Label } from "@/components/ui/Input";
@@ -24,10 +25,11 @@ function FilterFields({
   values: JobFilterValues;
   onChange: (next: JobFilterValues) => void;
 }) {
+  const t = useTranslations("jobs");
   return (
     <div className="space-y-4">
       <div>
-        <Label htmlFor="q">Keyword</Label>
+        <Label htmlFor="q">{t("keyword")}</Label>
         <Input
           id="q"
           placeholder="e.g. Uber driver"
@@ -36,9 +38,9 @@ function FilterFields({
         />
       </div>
       <div>
-        <Label htmlFor="emirate">Emirate</Label>
+        <Label htmlFor="emirate">{t("emirate")}</Label>
         <Select id="emirate" value={values.emirate} onChange={(e) => onChange({ ...values, emirate: e.target.value })}>
-          <option value="">All Emirates</option>
+          <option value="">{t("allEmirates")}</option>
           {emirates.map((v) => (
             <option key={v} value={v}>
               {EMIRATE_LABELS[v]}
@@ -47,9 +49,9 @@ function FilterFields({
         </Select>
       </div>
       <div>
-        <Label htmlFor="category">Category</Label>
+        <Label htmlFor="category">{t("category")}</Label>
         <Select id="category" value={values.category} onChange={(e) => onChange({ ...values, category: e.target.value })}>
-          <option value="">All categories</option>
+          <option value="">{t("allCategories")}</option>
           {jobCategories.map((v) => (
             <option key={v} value={v}>
               {JOB_CATEGORY_LABELS[v]}
@@ -58,13 +60,13 @@ function FilterFields({
         </Select>
       </div>
       <div>
-        <Label htmlFor="employmentType">Employment type</Label>
+        <Label htmlFor="employmentType">{t("employmentType")}</Label>
         <Select
           id="employmentType"
           value={values.employmentType}
           onChange={(e) => onChange({ ...values, employmentType: e.target.value })}
         >
-          <option value="">Any</option>
+          <option value="">{t("any")}</option>
           {employmentTypes.map((v) => (
             <option key={v} value={v}>
               {EMPLOYMENT_TYPE_LABELS[v]}
@@ -77,6 +79,7 @@ function FilterFields({
 }
 
 export function JobFilters({ initial }: { initial: JobFilterValues }) {
+  const t = useTranslations("jobs");
   const router = useRouter();
   const [draft, setDraft] = useState(initial);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -105,15 +108,15 @@ export function JobFilters({ initial }: { initial: JobFilterValues }) {
           }}
           className="flex-1"
         />
-        <Button variant="outline" onClick={() => setSheetOpen(true)} aria-label="Filters">
+        <Button variant="outline" onClick={() => setSheetOpen(true)} aria-label={t("filters")}>
           <SlidersHorizontal className="h-4 w-4" />
           {activeCount > 0 && <span>({activeCount})</span>}
         </Button>
       </div>
-      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Filters">
+      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={t("filters")}>
         <FilterFields values={draft} onChange={setDraft} />
         <Button fullWidth className="mt-6" onClick={() => apply(draft)}>
-          Show results
+          {t("showResults")}
         </Button>
       </Sheet>
 
@@ -121,7 +124,7 @@ export function JobFilters({ initial }: { initial: JobFilterValues }) {
       <div className="hidden w-64 shrink-0 sm:block">
         <FilterFields values={draft} onChange={setDraft} />
         <Button fullWidth className="mt-4" onClick={() => apply(draft)}>
-          Apply filters
+          {t("applyFilters")}
         </Button>
       </div>
     </>

@@ -1,19 +1,23 @@
 "use client";
 
 import { LayoutGrid, Briefcase, Heart, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { BottomNav, SideNav } from "@/components/ui/BottomNav";
 
-const NAV_ITEMS = [
-  { href: "/driver/dashboard", label: "Home", icon: LayoutGrid },
-  { href: "/driver/applications", label: "Applications", icon: Briefcase },
-  { href: "/driver/saved", label: "Saved", icon: Heart },
-  { href: "/driver/profile", label: "Profile", icon: User },
-];
+function useNavItems() {
+  const t = useTranslations("nav");
+  return [
+    { href: "/driver/dashboard", label: t("home"), icon: LayoutGrid },
+    { href: "/driver/applications", label: t("applications"), icon: Briefcase },
+    { href: "/driver/saved", label: t("saved"), icon: Heart },
+    { href: "/driver/profile", label: t("profile"), icon: User },
+  ];
+}
 
 export function DriverSideNav() {
-  return <SideNav items={NAV_ITEMS} />;
+  return <SideNav items={useNavItems()} />;
 }
 
 export function DriverBottomNav() {
-  return <BottomNav items={NAV_ITEMS} />;
+  return <BottomNav items={useNavItems()} />;
 }

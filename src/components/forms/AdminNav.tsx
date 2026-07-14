@@ -1,19 +1,24 @@
 "use client";
 
 import { LayoutGrid, Briefcase, Users, CreditCard } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { BottomNav, SideNav } from "@/components/ui/BottomNav";
 
-const NAV_ITEMS = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutGrid },
-  { href: "/admin/jobs", label: "Jobs", icon: Briefcase },
-  { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/payments", label: "Payments", icon: CreditCard },
-];
+function useNavItems() {
+  const t = useTranslations("nav");
+  const tc = useTranslations("common");
+  return [
+    { href: "/admin/dashboard", label: tc("dashboard"), icon: LayoutGrid },
+    { href: "/admin/jobs", label: t("jobs"), icon: Briefcase },
+    { href: "/admin/users", label: t("users"), icon: Users },
+    { href: "/admin/payments", label: t("payments"), icon: CreditCard },
+  ];
+}
 
 export function AdminSideNav() {
-  return <SideNav items={NAV_ITEMS} />;
+  return <SideNav items={useNavItems()} />;
 }
 
 export function AdminBottomNav() {
-  return <BottomNav items={NAV_ITEMS} />;
+  return <BottomNav items={useNavItems()} />;
 }

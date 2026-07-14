@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { JobCard, type JobCardData } from "@/components/jobs/JobCard";
 import type { JobFilterValues } from "@/components/jobs/JobFilters";
 
@@ -19,6 +20,7 @@ export function JobResultsClient({
   filters: JobFilterValues;
   isDriver: boolean;
 }) {
+  const t = useTranslations("jobs");
   const [jobs, setJobs] = useState(initialJobs);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [page, setPage] = useState(1);
@@ -60,7 +62,7 @@ export function JobResultsClient({
   }, [hasMore, loading, loadMore]);
 
   if (jobs.length === 0) {
-    return <p className="text-sm text-neutral-500">No jobs match your filters yet. Try broadening your search.</p>;
+    return <p className="text-sm text-neutral-500">{t("noResults")}</p>;
   }
 
   return (

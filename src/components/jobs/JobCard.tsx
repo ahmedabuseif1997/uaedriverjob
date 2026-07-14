@@ -1,8 +1,10 @@
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SaveJobButton } from "@/components/jobs/SaveJobButton";
 import { EMIRATE_LABELS, JOB_CATEGORY_LABELS, SALARY_PERIOD_LABELS } from "@/lib/enumLabels";
+import { formatAed } from "@/lib/format";
 
 export interface JobCardData {
   id: string;
@@ -19,14 +21,20 @@ export interface JobCardData {
   saved?: boolean;
 }
 
-function salaryText(job: JobCardData): string | null {
+function salaryText(job: JobCardData, locale: string): string | null {
   if (!job.salaryMin && !job.salaryMax) return null;
   const period = SALARY_PERIOD_LABELS[job.salaryPeriod];
-  if (job.salaryMin && job.salaryMax) return `AED ${job.salaryMin}–${job.salaryMax} / ${period}`;
-  return `AED ${job.salaryMin ?? job.salaryMax} / ${period}`;
+  if (job.salaryMin && job.salaryMax) {
+    return `${formatAed(job.salaryMin, locale)}–${formatAed(job.salaryMax, locale)} / ${period}`;
+  }
+  return `${formatAed(job.salaryMin ?? job.salaryMax!, locale)} / ${period}`;
 }
 
 export function JobCard({ job, isDriver }: { job: JobCardData; isDriver: boolean }) {
+  const locale = useLocale();
+  const t = useTranslations("jobs");
+  const salary = salaryText(job, locale);
+
   return (
     <Link href={`/jobs/${job.slug}`}>
       <Card className="h-full transition-shadow hover:shadow-md">
@@ -45,9 +53,9 @@ export function JobCard({ job, isDriver }: { job: JobCardData; isDriver: boolean
           )}
           <Badge tone="neutral">{EMIRATE_LABELS[job.emirate]}</Badge>
           <Badge tone="neutral">{JOB_CATEGORY_LABELS[job.category]}</Badge>
-          {job.applied && <Badge tone="success">Applied ✓</Badge>}
+          {job.applied && <Badge tone="success">{t("appliedLabel")}</Badge>}
         </div>
-        {salaryText(job) && <p className="mt-2 text-sm font-medium">{salaryText(job)}</p>}
+        {salary && <p className="mt-2 text-sm font-medium">{salary}</p>}
       </Card>
     </Link>
   );

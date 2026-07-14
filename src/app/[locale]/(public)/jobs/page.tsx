@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { JobFilters, type JobFilterValues } from "@/components/jobs/JobFilters";
@@ -44,7 +45,7 @@ export default async function JobsSearchPage({
     ...(filters.q ? { title: { contains: filters.q, mode: "insensitive" } } : {}),
   };
 
-  const [jobs, total, user] = await Promise.all([
+  const [jobs, total, user, t] = await Promise.all([
     prisma.jobPost.findMany({
       where,
       orderBy: [{ tier: "asc" }, { publishedAt: "desc" }],
@@ -53,6 +54,7 @@ export default async function JobsSearchPage({
     }),
     prisma.jobPost.count({ where }),
     getCurrentUser(),
+    getTranslations("jobs"),
   ]);
 
   let savedIds = new Set<string>();
@@ -87,9 +89,7 @@ export default async function JobsSearchPage({
 
   return (
     <main className="mx-auto max-w-6xl p-4">
-      <h1 className="mb-4 text-xl font-semibold">
-        {total} driving job{total === 1 ? "" : "s"} in the UAE
-      </h1>
+      <h1 className="mb-4 text-xl font-semibold">{t("resultsCount", { count: total })}</h1>
       <div className="flex gap-8">
         <JobFilters initial={filters} />
         <div className="flex-1">

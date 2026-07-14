@@ -258,7 +258,7 @@ export function JobPostForm({
         )}
       </div>
 
-      <StickyBar className="left-0 -mx-4 mt-6">
+      <StickyBar className="-mx-4 mt-6">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4">
           <span className="text-xs text-neutral-500">
             {saveState === "saving" ? "Saving..." : saveState === "saved" ? "Saved" : " "}
