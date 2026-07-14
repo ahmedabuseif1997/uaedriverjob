@@ -1,0 +1,10 @@
+{
+  "common": {
+    "appName": "UAE Driver Jobs",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "apply": "Apply",
+    "applied": "Applied"
+  }
+}

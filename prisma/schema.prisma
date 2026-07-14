@@ -1,0 +1,379 @@
+// UAE Driver Job Board - Prisma schema
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Enums ----------
+
+enum Role {
+  DRIVER
+  EMPLOYER
+  ADMIN
+}
+
+enum Locale {
+  EN
+  AR
+}
+
+enum Emirate {
+  DUBAI
+  ABU_DHABI
+  SHARJAH
+  AJMAN
+  RAS_AL_KHAIMAH
+  FUJAIRAH
+  UMM_AL_QUWAIN
+}
+
+enum DriverLicenseCategory {
+  LIGHT_VEHICLE
+  LIGHT_MOTORCYCLE
+  HEAVY_TRUCK
+  HEAVY_BUS
+  FORKLIFT
+  HEAVY_EQUIPMENT
+}
+
+enum VisaStatus {
+  EMPLOYMENT_VISA_CURRENT_EMPLOYER
+  EMPLOYMENT_VISA_TRANSFERABLE
+  VISIT_VISA
+  GOLDEN_VISA
+  FAMILY_SPONSORED
+  UAE_NATIONAL
+  OTHER
+}
+
+enum VehicleType {
+  SEDAN
+  SUV
+  VAN
+  PICKUP_TRUCK
+  HEAVY_TRUCK
+  BUS
+  MOTORCYCLE
+  LIMOUSINE
+}
+
+enum JobCategory {
+  RIDE_HAILING
+  DELIVERY_RIDER
+  TRUCK_HEAVY_VEHICLE
+  PRIVATE_FAMILY_DRIVER
+  BUS_DRIVER
+  LIMOUSINE_CHAUFFEUR
+  LOGISTICS_FLEET
+  OTHER
+}
+
+enum JobStatus {
+  DRAFT
+  PENDING_PAYMENT
+  ACTIVE
+  EXPIRED
+  CLOSED
+  REJECTED
+  DEACTIVATED
+}
+
+enum ListingTier {
+  STANDARD
+  FEATURED
+  URGENT
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+}
+
+enum SalaryPeriod {
+  MONTHLY
+  DAILY
+  PER_TRIP
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  VIEWED
+  SHORTLISTED
+  REJECTED
+  HIRED
+  WITHDRAWN
+}
+
+enum OrderType {
+  JOB_POST_ONE_TIME
+  SUBSCRIPTION_INITIAL
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum SubscriptionPlan {
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+  TRIALING
+}
+
+// ---------- Models ----------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role
+  emailVerified Boolean @default(false)
+  isSuspended  Boolean  @default(false)
+  suspendedReason String?
+  locale       Locale   @default(EN)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  driverProfile           DriverProfile?
+  employerProfile         EmployerProfile?
+  sessions                Session[]
+  passwordResetTokens     PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  auditLogsAsActor        AdminAuditLog[]           @relation("ActorUser")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+model DriverProfile {
+  id                String                  @id @default(cuid())
+  userId            String                  @unique
+  user              User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName          String
+  phone             String?
+  photoUrl          String?
+  resumeUrl         String?
+  emiratesIdNumber  String?
+  licenseCategories DriverLicenseCategory[]
+  visaStatus        VisaStatus?
+  yearsExperience   Int?
+  vehicleTypes      VehicleType[]
+  preferredEmirates Emirate[]
+  bio               String?
+  isProfileComplete Boolean                 @default(false)
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  applications Application[]
+  savedJobs    SavedJob[]
+
+  @@index([userId])
+  @@map("driver_profiles")
+}
+
+model EmployerProfile {
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName      String
+  logoUrl          String?
+  tradeLicenseNo   String?
+  contactPhone     String?
+  website          String?
+  aboutCompany     String?
+  emirate          Emirate?
+  stripeCustomerId String?   @unique
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  jobPosts     JobPost[]
+  orders       Order[]
+  subscription Subscription?
+
+  @@index([userId])
+  @@map("employer_profiles")
+}
+
+model JobPost {
+  id                         String                  @id @default(cuid())
+  employerId                 String
+  employer                   EmployerProfile         @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  title                      String
+  slug                       String                  @unique
+  description                String
+  category                   JobCategory
+  emirate                    Emirate
+  addressText                String?
+  employmentType             EmploymentType
+  salaryMin                  Int?
+  salaryMax                  Int?
+  salaryPeriod               SalaryPeriod            @default(MONTHLY)
+  requiredLicenseCategories  DriverLicenseCategory[]
+  requiredVehicleTypes       VehicleType[]
+  minExperienceYears         Int?
+  status                     JobStatus               @default(DRAFT)
+  tier                       ListingTier              @default(STANDARD)
+  isModeratedApproved        Boolean                 @default(true)
+  moderationNotes            String?
+  publishedAt                DateTime?
+  expiresAt                  DateTime?
+  createdAt                  DateTime                @default(now())
+  updatedAt                  DateTime                @updatedAt
+
+  order        Order?
+  applications Application[]
+  savedBy      SavedJob[]
+
+  @@index([status, emirate, category])
+  @@index([employerId])
+  @@map("job_posts")
+}
+
+model Application {
+  id                String            @id @default(cuid())
+  jobPostId         String
+  jobPost           JobPost           @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
+  driverId          String
+  driver            DriverProfile     @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  status            ApplicationStatus @default(SUBMITTED)
+  coverNote         String?
+  resumeUrlSnapshot String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@unique([jobPostId, driverId])
+  @@index([driverId])
+  @@index([jobPostId])
+  @@map("applications")
+}
+
+model SavedJob {
+  id        String        @id @default(cuid())
+  driverId  String
+  driver    DriverProfile @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  jobPostId String
+  jobPost   JobPost       @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+
+  @@unique([driverId, jobPostId])
+  @@map("saved_jobs")
+}
+
+model Order {
+  id                      String          @id @default(cuid())
+  employerId              String
+  employer                EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  type                    OrderType
+  jobPostId               String?         @unique
+  jobPost                 JobPost?        @relation(fields: [jobPostId], references: [id])
+  tier                    ListingTier?
+  amountFils              Int
+  currency                String          @default("aed")
+  status                  OrderStatus     @default(PENDING)
+  stripeCheckoutSessionId String?         @unique
+  stripePaymentIntentId   String?         @unique
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  @@index([employerId])
+  @@index([status])
+  @@map("orders")
+}
+
+model Subscription {
+  id                   String              @id @default(cuid())
+  employerId           String              @unique
+  employer             EmployerProfile     @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  plan                 SubscriptionPlan
+  status               SubscriptionStatus
+  stripeSubscriptionId String              @unique
+  stripePriceId        String
+  quotaTotal           Int
+  quotaRemaining       Int
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean             @default(false)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model StripeEvent {
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
+
+  @@map("stripe_events")
+}
+
+model AdminAuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String
+  actorUser   User     @relation("ActorUser", fields: [actorUserId], references: [id])
+  action      String
+  targetType  String
+  targetId    String
+  reason      String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId])
+  @@index([targetType, targetId])
+  @@map("admin_audit_logs")
+}
