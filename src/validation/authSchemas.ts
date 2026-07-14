@@ -2,7 +2,8 @@ import { z } from "zod";
 
 export const registerSchema = z.object({
   role: z.enum(["DRIVER", "EMPLOYER"]),
-  fullName: z.string().min(2, "Enter your full name").max(100),
+  // For drivers this is their full name; for employers it's their company name.
+  name: z.string().min(2, "This field is too short").max(100),
   email: z.string().email("Enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
