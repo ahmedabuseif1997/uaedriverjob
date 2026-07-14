@@ -2,6 +2,8 @@
 
 A driver-focused job board for the UAE. Employers pay via Stripe to publish job listings; drivers create a profile once and apply to jobs with a single tap. Built with Next.js (App Router), PostgreSQL/Prisma, and Stripe, with Arabic/English (RTL) support and a mobile-first, installable PWA experience.
 
+See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for deploying to DigitalOcean App Platform.
+
 ## Stack
 
 - **Framework**: Next.js (App Router) + TypeScript
